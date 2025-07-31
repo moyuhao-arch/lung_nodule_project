@@ -34,4 +34,18 @@ class ResNet2D:
     x = self.conv_bn_relu(x,32,kernel_size=(7,7),strides=(2,2))
     x = layers.MaxPooling2D((3,3),strides=(2,2),padding='same')(x)
 
- 
+    x = self.residual_block(x,32)
+    x = self.residual_block(x,32)
+
+    x = self.residual_block(x,64)
+    x = self.residual_block(x,64)
+    
+    x = self.residual_block(x,128)
+    x = self.residual_block(x,128)
+
+    x =layers.GlobalAveragePooling2D()(x)
+    return x
+
+  def build_model(self)
+  
+                            
