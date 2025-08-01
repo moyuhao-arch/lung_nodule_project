@@ -70,9 +70,21 @@ class ResNet2D:
 
     if self.num_classes ==1:
       output = layers.Dense(1,activation = 'sigmoid',name = 'output')(x)
+    
+    model = Model(inputs=[yz_input,zx_input,xy_input],output=output)
+    return model
 
+def create_model(model_type='resnet',input_shape=(32,32,1),num_classes=1,dropout_rate=0.5):
+  if model_type == 'resnet':
+    resent = ResNet2D(input_shape,num_classes,dropout_rate)
+    return resnet.build_model()
+  else :
+    raise ValueError(f"{model_type}模型未定义，不支持")
 
-
+if __name__ == "__main__":
+  model =create_model('resnet',input_shape=(32,32,1),num_classes=1)
+  model.summary
+  
 
 
 
