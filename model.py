@@ -43,9 +43,57 @@ class ResNet2D:
     x = self.residual_block(x,128)
     x = self.residual_block(x,128)
 
+    x = self.residual_block(x,256)
+
     x =layers.GlobalAveragePooling2D()(x)
     return x
 
-  def build_model(self)
-  
-                            
+  def build_model(self)：
+    yz_input =layers.Input(shape=self.input_shape,name='yz_input')
+    zx_input =layers.Input(shape=self.input_shape,name='zx_input')
+    xy_input =layers.Input(shape=self.input_shape,name='xy_input')
+
+    yz_features = self.build_resnet_backbone(yz_input)
+    zx_features = self.build_resnet_backbone(zx_input)
+    xy_features = self.build_resnet_backbone(xy_input)
+
+    combined_features = layers.Concatenate()([yz_features,zx_features,xy_features])
+
+    x = layers.Dense(512,activation='relu',kernel_regularizer=l2(1e-4))(combined_features)
+    x = layers.Dropout(self.dropout_rate)(x)
+    
+    x = layers.Dense(256,activation='relu',kernel_regularizer=l2(1e-4))(x)
+    x = layers.Dropout(self.dropout_rate)(x)
+
+    x = layers.Dense(128,activation='relu',kernel_regularizer=l2(1e-4))(x)
+    x = layers.Dropout(self.dropout_rate)(x)
+
+    if self.num_classes ==1:
+      output = layers.Dense(1,activation = 'sigmoid',name = 'output')(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
