@@ -52,6 +52,40 @@ class DataProcessor:
             return empty_slice, empty_slice, empty_slice
 
 
+    def load_dataset(self, data_dir: str, fold_structure: bool = True) -> Tuple[List, List, List]:
+        file_paths, labels, folds = [], [], []
+        
+        if fold_structure:
+            for fold in range(10):
+                fold_dir = os.path.join(data_dir, f'fold{fold}')
+                if not os.path.exists(fold_dir):
+                    continue
+                    
+                for label in [0, 1]:
+                    label_dir = os.path.join(fold_dir, str(label))
+                    if not os.path.exists(label_dir):
+                        continue
+                        
+                    for filename in os.listdir(label_dir):
+                        if filename.endswith('.npy'):
+                            file_path = os.path.join(label_dir, filename)
+                            file_paths.append(file_path)
+                            labels.append(label)
+                            folds.append(fold)
+        else:
+            for label in [0, 1]:
+                label_dir = os.path.join(data_dir, str(label))
+                if not os.path.exists(label_dir):
+                    continue
+                    
+                for filename in os.listdir(label_dir):
+                    if filename.endswith('.npy'):
+                        file_path = os.path.join(label_dir, filename)
+                        file_paths.append(file_path)
+                        labels.append(label)
+                        folds.append(0)
+        
+        return file_paths, labels, folds
 
 
 
