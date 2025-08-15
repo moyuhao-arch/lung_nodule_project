@@ -18,3 +18,6 @@ def main():
     'batch_size': 32,
     'save_dir': './test_results'
   }
+  os.makedirs(config['save_dir'],exist_ok=True)
+
+  data_processing
