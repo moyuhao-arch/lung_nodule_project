@@ -88,7 +88,43 @@ class DataProcessor:
         return file_paths, labels, folds
 
 
+    def create_data_generator(self, file_paths: List[str], labels: List[int], 
+                            batch_size: int = 32, is_training: bool = True):
+        num_samples = len(file_paths)
+        indices = list(range(num_samples))
+        
+        while True:
+            if is_training:
+                random.shuffle(indices)
+            
+            for i in range(0, num_samples, batch_size):
+                batch_indices = indices[i:i + batch_size]
+                batch_paths = [file_paths[j] for j in batch_indices]
+                batch_labels = [labels[j] for j in batch_indices]
+                
+                axial_slices, coronal_slices, sagittal_slices = [], [], []
+                
+                for path in batch_paths:
+                    axial, coronal, sagittal = self.process_single_volume(path, is_training)
+                    axial_slices.append(axial)
+                    coronal_slices.append(coronal)
+                    sagittal_slices.append(sagittal)
+                
+                axial_slices = np.expand_dims(np.array(axial_slices), axis=-1)
+                coronal_slices = np.expand_dims(np.array(coronal_slices), axis=-1)
+                sagittal_slices = np.expand_dims(np.array(sagittal_slices), axis=-1)
+                batch_labels = np.array(batch_labels)
+                
+                yield [axial_slices, coronal_slices, sagittal_slices], batch_labels
 
+if __name__ == "__main__":
+    processor = DataProcessor(image_size=64, normalize=True)
+    data_dir = "../DATASET/LUNA16_patch"
+    file_paths, labels, folds = processor.load_dataset(data_dir, fold_structure=True)
+    
+    print(f"加载了 {len(file_paths)} 个样本")
+    print(f"良性样本: {labels.count(0)}")
+    print(f"恶性样本: {labels.count(1)}") 
 
 
 
