@@ -44,6 +44,7 @@ class ResNet2D:
     x = self.residual_block(x,128)
 
     x = self.residual_block(x,256)
+    x = self.residual_block(x,256)
 
     x =layers.GlobalAveragePooling2D()(x)
     return x
